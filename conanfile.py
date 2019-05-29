@@ -736,6 +736,8 @@ class BoostConan(ConanFile):
             return compiler, compiler_version, ""
         elif self.settings.compiler == "sun-cc":
             return "sunpro", compiler_version, ""
+        elif self.settings.os == "Linux" and self.settings.compiler == "Intel":
+            return "intel-linux", compiler_version, self._cxx
         else:
             return compiler, compiler_version, ""
 
@@ -751,8 +753,9 @@ class BoostConan(ConanFile):
         if tools.os_info.is_macos:
             return "darwin"
 
-        with_toolset = {"apple-clang": "darwin"}.get(str(self.settings.compiler),
-                                                     str(self.settings.compiler))
+        with_toolset = {"apple-clang": "darwin",
+                        "Intel": "intel-linux"}.get(str(self.settings.compiler),
+                                                    str(self.settings.compiler))
 
         # fallback for the case when no unversioned gcc/clang is available
         if with_toolset in ["gcc", "clang"] and not tools.which(with_toolset):
